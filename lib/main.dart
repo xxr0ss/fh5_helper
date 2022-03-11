@@ -1,6 +1,7 @@
-import 'dart:developer';
 import 'dart:io';
+import 'dart:developer' as dev;
 
+import 'package:fh5_helper/forza_display.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ class _MyHomeState extends State<MyHome> {
   startDisplayPage() {
     var socket = context.read<AppBackend>().startSocket();
     if (socket == null) {
-      log("Failed to start display page");
+      dev.log("Failed to start display page");
       return;
     }
     socket.then((s) async {
@@ -117,12 +118,17 @@ class DisplayPage extends StatefulWidget {
 
 class _DisplayPageState extends State<DisplayPage> {
   late var port = context.read<AppBackend>().port;
+  double engine = 0;
   String receivedJsonData = "Waiting for data...";
+  ForzaData forzaData = ForzaData();
 
   handleFH5Data(Datagram? d) {
     if (d == null) return;
+    var jsonStr = String.fromCharCodes(d.data);
+    forzaData.parseJsonStr(jsonStr);
     setState(() {
-      receivedJsonData = String.fromCharCodes(d.data);
+      receivedJsonData = jsonStr;
+      engine = forzaData.currentEngineRpm / forzaData.engineMaxRpm;
     });
   }
 
@@ -147,6 +153,11 @@ class _DisplayPageState extends State<DisplayPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            DashBoard(
+              config: DashboardConfig(
+                  value: engine,
+                  text: "Engine: ${forzaData.currentEngineRpm.toInt()} rpm"),
+            ),
             Text('Port: $port'),
             Text('Data: \n$receivedJsonData'),
           ],
