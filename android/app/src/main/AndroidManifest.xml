@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.fh5_helper">
+
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="fh5_helper"
         android:name="${applicationName}"
