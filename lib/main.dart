@@ -119,6 +119,8 @@ class DisplayPage extends StatefulWidget {
 class _DisplayPageState extends State<DisplayPage> {
   late var port = context.read<AppBackend>().port;
   double engine = 0;
+  double accel = 0;
+  double brake = 0;
   String receivedJsonData = "Waiting for data...";
   ForzaData forzaData = ForzaData();
 
@@ -129,6 +131,8 @@ class _DisplayPageState extends State<DisplayPage> {
     setState(() {
       receivedJsonData = jsonStr;
       engine = forzaData.currentEngineRpm / forzaData.engineMaxRpm;
+      accel = forzaData.accel / 255;
+      brake = forzaData.brake / 255;
     });
   }
 
@@ -153,10 +157,30 @@ class _DisplayPageState extends State<DisplayPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DashBoard(
-              config: DashboardConfig(
-                  value: engine,
-                  text: "Engine: ${forzaData.currentEngineRpm.toInt()} rpm"),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              DashBoard(
+                config: DashboardConfig(engine,
+                    text: "Engine: ${forzaData.currentEngineRpm.toInt()} rpm"),
+              ),
+            ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                BarDisplay(
+                  config: BarDisplayConfig(
+                    brake,
+                    text: "Brake",
+                  ),
+                ),
+                const SizedBox(width: 100),
+                BarDisplay(
+                  config: BarDisplayConfig(
+                    accel,
+                    text: "Accel",
+                    color: Colors.red,
+                  ),
+                ),
+              ],
             ),
             Text('Port: $port'),
             Text('Data: \n$receivedJsonData'),

@@ -32,8 +32,8 @@ class DashboardConfig {
   double strokeWidth;
   String text;
 
-  DashboardConfig({
-    required this.value,
+  DashboardConfig(
+    this.value, {
     this.color = Colors.blue,
     this.backgroundColor = const Color(0xFFD6D6D6),
     this.radius = 90.0,
@@ -105,6 +105,89 @@ class _DashBoardState extends State<DashBoard> {
           width: widget.config.radius * 2,
           height: widget.config.radius * 2,
           child: CustomPaint(painter: DashboardPainter(widget.config)),
+        ),
+      ],
+    );
+  }
+}
+
+class BarDisplayConfig {
+  double value;
+  Color color;
+  Color backgroundColor;
+  double width;
+  double height;
+  String text;
+
+  BarDisplayConfig(
+    this.value, {
+    this.color = Colors.blue,
+    this.backgroundColor = const Color(0xFFD6D6D6),
+    this.width = 30.0,
+    this.height = 200.0,
+    this.text = "",
+  });
+}
+
+class BarDisplayPainter extends CustomPainter {
+  final BarDisplayConfig _config;
+  late Paint _paint;
+
+  BarDisplayPainter(this._config) {
+    _paint = Paint();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.translate(_config.width, _config.height);
+    canvas.rotate(pi);
+
+    _paint
+      ..color = _config.backgroundColor
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = _config.width;
+
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+          0, 0, _config.width, _config.height, const Radius.circular(5)),
+      _paint,
+    );
+
+    _paint.color = _config.color;
+    canvas.drawRRect(
+      RRect.fromLTRBR(0, 0, _config.width, _config.height * _config.value,
+          const Radius.circular(5)),
+      _paint,
+    );
+
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class BarDisplay extends StatefulWidget {
+  final BarDisplayConfig config;
+  const BarDisplay({Key? key, required this.config}) : super(key: key);
+
+  @override
+  _BarDisplayState createState() => _BarDisplayState();
+}
+
+class _BarDisplayState extends State<BarDisplay> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(widget.config.text),
+        SizedBox(
+          width: widget.config.width,
+          height: widget.config.height,
+          child: CustomPaint(painter: BarDisplayPainter(widget.config)),
         ),
       ],
     );
