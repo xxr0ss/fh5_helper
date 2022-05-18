@@ -10,8 +10,9 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppBackend(),
-      child: const MaterialApp(
-        home: MyHome(),
+      child: MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const MyHome(),
       ),
     ),
   );
@@ -98,6 +99,7 @@ class _MyHomeState extends State<MyHome> {
               onSubmitted: (str) => setPort(str),
               onChanged: (str) => setPort(str),
             ),
+            const SizedBox(height: 10),
             TextButton(
               onPressed: startDisplayPage,
               child: const Text('Start'),
